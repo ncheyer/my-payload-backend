@@ -9,26 +9,50 @@ import sharp from 'sharp'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { Pages } from './collections/Pages'
+import { BlogPosts } from './collections/BlogPosts'
+import { Authors } from './collections/Authors'
+import { Categories } from './collections/Categories'
+import { Tags } from './collections/Tags'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
+  upload: {
+    limits: {
+      fileSize: 5000000, // 5MB
+    },
+  },
   admin: {
     user: Users.slug,
     importMap: {
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media],
+
+  collections: [Users, Media, Pages, BlogPosts, Authors, Categories, Tags],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
+  cors: [
+    'https://v0-speak-about-ai-website.vercel.app',
+    'https://*.vercel.app', // Allow all vercel domains
+    'http://localhost:3000',
+    'https://localhost:3000',
+    '*', // Temporarily allow all origins for testing
+  ],
+  csrf: [
+    'https://v0-speak-about-ai-website.vercel.app',
+    'https://*.vercel.app',
+    'http://localhost:3000',
+    'https://localhost:3000',
+  ],
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   db: vercelPostgresAdapter({
     pool: {
-      connectionString: process.env.POSTGRES_URL || '',
+      connectionString: process.env.POSTGRES_URL_NON_POOLING || '',
     },
   }),
   sharp,
