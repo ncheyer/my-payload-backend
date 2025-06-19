@@ -537,6 +537,29 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "VideoBlock".
+ */
+export interface VideoBlock {
+  videoType: 'youtube' | 'vimeo' | 'custom';
+  /**
+   * Paste the full video URL (e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+   */
+  videoUrl: string;
+  /**
+   * Optional title for the video
+   */
+  title?: string | null;
+  aspectRatio?: ('16/9' | '4/3' | '21/9') | null;
+  /**
+   * Note: Most browsers block autoplay with sound
+   */
+  autoplay?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'video';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth".
  */
 export interface Auth {

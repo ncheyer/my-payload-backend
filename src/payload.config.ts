@@ -2,6 +2,8 @@
 import { vercelPostgresAdapter } from '@payloadcms/db-vercel-postgres'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { BlocksFeature } from '@payloadcms/richtext-lexical'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
@@ -14,6 +16,7 @@ import { BlogPosts } from './collections/BlogPosts'
 import { Authors } from './collections/Authors'
 import { Categories } from './collections/Categories'
 import { Tags } from './collections/Tags'
+import { VideoBlock } from './blocks'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -32,7 +35,14 @@ export default buildConfig({
   },
 
   collections: [Users, Media, Pages, BlogPosts, Authors, Categories, Tags],
-  editor: lexicalEditor(),
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [
+      ...defaultFeatures,
+      BlocksFeature({
+        blocks: [VideoBlock],
+      }),
+    ],
+  }),
   secret: process.env.PAYLOAD_SECRET || '',
   cors: [
     'https://v0-speak-about-ai-website.vercel.app',
@@ -58,6 +68,11 @@ export default buildConfig({
   sharp,
   plugins: [
     payloadCloudPlugin(),
-    // storage-adapter-placeholder
+    vercelBlobStorage({
+      collections: {
+        media: true,
+      },
+      token: process.env.BLOB_READ_WRITE_TOKEN || '',
+    }),
   ],
 })
